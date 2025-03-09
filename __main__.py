@@ -1,4 +1,6 @@
-from app.ui import main
+from Hello import main
 
 if __name__ == "__main__":
     main()
+
+# streamlit run __main__.py --server.runOnSave true

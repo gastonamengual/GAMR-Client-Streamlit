@@ -12,7 +12,3 @@ class BaseCustomException(Exception):
 
 class TokenNotObtainedError(BaseCustomException):
     pass
-
-
-class DetectionNotObtained(BaseCustomException):
-    pass
