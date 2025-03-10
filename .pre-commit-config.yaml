@@ -21,7 +21,7 @@ repos:
     -   id: ruff-format
 -   repo: https://github.com/pycqa/pylint
     # Cannot be replaced by ruff until https://github.com/astral-sh/ruff/issues/970 is closed
-    rev: "v3.3.4"
+    rev: "v3.3.5"
     hooks:
     -   id: pylint
         args: ['--rcfile=.pylintrc']
