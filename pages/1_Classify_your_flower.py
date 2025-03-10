@@ -15,20 +15,18 @@ def authenticate(api_client: API_Client):
     st.session_state.token = token
 
 
-def select_classifier(api_client: API_Client):
+def get_classifiers(api_client: API_Client):
     models = [""]
     models = models + api_client.get_classifier()
-    classifier = st.selectbox("Select Flower Classifier", models)
-    return classifier
+    return models
 
 
-def select_version(api_client: API_Client, classifier: str):
+def get_classifier_versions(api_client: API_Client, classifier: str):
     classifier_versions = [""]
     classifier_versions = classifier_versions + api_client.get_classifier_versions(
         classifier=classifier
     )
-    classifier_version = st.selectbox("Select Classifier Version", classifier_versions)
-    return classifier_version
+    return classifier_versions
 
 
 def read_csv_to_data(uploaded_file: UploadedFile) -> Dataset:
@@ -71,26 +69,43 @@ def read_csv_to_data(uploaded_file: UploadedFile) -> Dataset:
     return Dataset(X=X, y=y)
 
 
-def training_tab(api_client: API_Client, classifier: str):
+def training_tab(api_client: API_Client):
+    new_classifier = st.text_input("Enter a new classifier name to train:", "")
+
+    classifiers = get_classifiers(api_client=api_client)
+    disable_selectbox = bool(new_classifier)
+    classifier = st.selectbox(
+        "Or select an existing Flower Classifier",
+        classifiers,
+        disabled=disable_selectbox,
+    )
+
+    classifier_to_train = new_classifier if new_classifier else classifier
+
+    st.markdown(f"### Training: {classifier_to_train}")
+
     uploaded_file = st.file_uploader("Upload your dataset (CSV)", type=["csv"])
     if uploaded_file:
         data = read_csv_to_data(uploaded_file)
         if st.button(f"Train {classifier}!"):
             flower_payload = api_client.train_classifier(
-                classifier=classifier,
+                classifier=classifier_to_train,
                 data=data,
             )
             st.write(
                 f"New version trained: {flower_payload.model_name} - v{flower_payload.model_version}"
             )
 
-            if st.button("Was the model good? Promote it!"):
-                st.text_input("Model Alias")
 
+def prediction_tab(api_client: API_Client):
+    classifiers = get_classifiers(api_client=api_client)
+    classifier = st.selectbox("Select Flower Classifier", classifiers)
 
-def prediction_tab(api_client: API_Client, classifier: str):
     if classifier:
-        classifier_version = select_version(api_client, classifier)
+        classifier_versions = get_classifier_versions(api_client, classifier=classifier)
+        classifier_version = st.selectbox(
+            "Select Classifier Version", classifier_versions
+        )
 
         if classifier and classifier_version:
             st.write("Enter your flower features")
@@ -130,6 +145,8 @@ def prediction_tab(api_client: API_Client, classifier: str):
                 st.write(f"Your flower is an Iris {flower.classification}")
                 st.image(image_path, width=400)
 
+                st.text("Was the model good? Promote it!")
+
 
 def main():
     st.title("Flower Recognition - MLFlow")
@@ -145,14 +162,12 @@ def main():
     api_client = API_Client(username="gaston", base_url=backend_service_url)
     authenticate(api_client)
 
-    classifier = select_classifier(api_client)
-
     # Create tabs
     tab1, tab2 = st.tabs(["🔮 Prediction", "📚 Training"])
     with tab1:
-        prediction_tab(api_client, classifier)
+        prediction_tab(api_client)
     with tab2:
-        training_tab(api_client, classifier)
+        training_tab(api_client)
 
 
 st.set_page_config(page_title="ML Model", page_icon="🤖", layout="wide")
