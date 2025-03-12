@@ -159,3 +159,7 @@ prof/*
 .intentguard/IntentGuard-1.Q8_0.gguf
 .intentguard/llamafile.exe
 s
+.DS_Store
+pytest-report.xml
+images/.DS_Store
+images/.DS_Store

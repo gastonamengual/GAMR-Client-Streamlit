@@ -1,8 +1,9 @@
 import streamlit as st
 from PIL import Image
 
-from app.api_client import API_Client
-from app.model import BackendService, ImagePayload, backend_service_urls
+from app.api_client.api_client import API_Client
+from app.api_client.model import BackendService, backend_service_urls
+from app.object_recognition import ImagePayload
 from app.utils import preprocess_image
 
 
@@ -34,7 +35,6 @@ def main():
 
         if st.button("Detect objects!"):
             api_connector = API_Client(username=username, base_url=backend_service_url)
-
             token = api_connector.authenticate()
 
             st.session_state.token = token

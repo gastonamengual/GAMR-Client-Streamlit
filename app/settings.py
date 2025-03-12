@@ -10,6 +10,4 @@ class _Settings:
     LOCAL_BASE_URL = "http://localhost:8080"
 
 
-# streamlit run __main__.py --server.runOnSave true
-
 Settings = _Settings()
