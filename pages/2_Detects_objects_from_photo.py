@@ -21,6 +21,8 @@ def main():
         [option.value for option in BackendService],
     )
     backend_service_url = backend_service_urls[backend_service]
+    if backend_service == "Render + Docker":
+        st.warning("Due to Render's free trial, this request can take up 50 seconds")
 
     model_service = st.selectbox("Choose an AI Model Registry", ["HuggingFace"])
 
