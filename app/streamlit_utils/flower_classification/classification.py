@@ -1,12 +1,11 @@
 import streamlit as st
-from streamlit_utils.flower_classification import (
-    get_classifier_versions,
-    get_classifiers,
-)
 
 from app.api_client.api_client import API_Client
 from app.flower_classification import IMAGE_FLOWER_MAPPING, Flower
 from app.flower_classification.service import FlowerService
+
+from .classifiers import get_classifiers
+from .versions import get_classifier_versions
 
 
 def get_features():

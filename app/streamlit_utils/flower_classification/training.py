@@ -1,10 +1,10 @@
 import streamlit as st
-from streamlit_utils.flower_classification import read_csv_to_data
 
 from app.api_client.api_client import API_Client
 from app.flower_classification import FlowerService
 
 from .classifiers import get_classifiers
+from .read_csv_data import read_csv_to_data
 
 
 def training_tab(backend_service_url: str):

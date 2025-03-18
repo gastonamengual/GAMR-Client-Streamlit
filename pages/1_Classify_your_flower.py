@@ -5,8 +5,23 @@ from app.streamlit_utils.flower_classification import classification_tab, traini
 
 
 def main():
-    st.title("Flower Recognition - MLFlow")
-    st.header("By Gastón Amengual")
+    disabled = True
+    st.title("Iris Classification Feature Currently Disabled")
+    st.markdown("""
+
+    ### Hosting Limitations
+    - **Vercel** does not support deployments exceeding 250MB, and **MLflow** exceeds this limit, making it impossible to host the API there.
+    - **Render’s** free tier has a 512MB RAM limit, which is not enough for running **MLflow** reliably.
+
+    ### Alternative Solutions
+    To enable **MLflow** with a functional model registry, a paid hosting option is required. Possible alternatives include:
+    - **Azure Functions** – Serverless compute service that can run ML models efficiently.
+    - **AWS Lambda** – Scalable serverless option with flexible resource allocation.
+
+    """)
+
+    if disabled:
+        return
 
     backend_service = st.selectbox(
         "Choose a Service:",
