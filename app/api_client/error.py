@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from app.utils import stop_execution
+from app.streamlit_utils import stop_execution
 
 
 @dataclass
@@ -11,4 +11,8 @@ class BaseCustomException(Exception):
 
 
 class TokenNotObtainedError(BaseCustomException):
+    pass
+
+
+class PredictionNotObtained(BaseCustomException):
     pass

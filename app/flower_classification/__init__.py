@@ -6,6 +6,7 @@ from .model import (
     Flower,
     FlowerPayload,
 )
+from .service import FlowerService
 
 __all__ = [
     "ModelsNotObtained",
@@ -16,4 +17,5 @@ __all__ = [
     "Flower",
     "FLOWER_CLASSIFICATION_MAPPING",
     "IMAGE_FLOWER_MAPPING",
+    "FlowerService",
 ]

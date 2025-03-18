@@ -1,57 +1,78 @@
 import streamlit as st
-from PIL import Image
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from app.api_client.api_client import API_Client
 from app.api_client.model import BackendService, backend_service_urls
-from app.object_recognition import ImagePayload
-from app.utils import preprocess_image
+from app.object_recognition import ImagePayload, ObjectDetectionService
+from app.streamlit_utils.object_detection import preprocess_image
 
 
-def main():
+def generate_ui() -> tuple[UploadedFile | None, str, str]:
     st.title("Image Recognition App")
     st.header("By Gastón Amengual")
 
-    placeholder = st.empty()
+    col1, col2 = st.columns(2)
+
+    with col1:
+        backend_service = st.selectbox(
+            "Choose a Backend Service:",
+            [option.value for option in BackendService],
+        )
+        backend_service_url = backend_service_urls[backend_service]
+        if backend_service == "Render + Docker":
+            st.warning(
+                "Due to Render's free trial, this request can take up 50 seconds"
+            )
+
+    with col2:
+        model_service = st.selectbox("Choose an AI Model Registry", ["HuggingFace"])
+
     uploaded_image = st.file_uploader(
         "Upload an image", type=["png", "jpg", "jpeg"], accept_multiple_files=False
     )
 
-    backend_service = st.selectbox(
-        "Choose a Backend Service:",
-        [option.value for option in BackendService],
+    return uploaded_image, backend_service_url, model_service
+
+
+def get_prediction(
+    filename: str, encoded_image: str, model_service: str, api_client: API_Client
+):
+    image_payload = ImagePayload(
+        filename=filename,
+        image_bytes=encoded_image,
+        model_service=model_service,
     )
-    backend_service_url = backend_service_urls[backend_service]
-    if backend_service == "Render + Docker":
-        st.warning("Due to Render's free trial, this request can take up 50 seconds")
+    service = ObjectDetectionService(api_client=api_client)
+    return service.detect_objects(image_payload)
 
-    model_service = st.selectbox("Choose an AI Model Registry", ["HuggingFace"])
 
-    username = st.text_input("Enter your username", value="gaston").strip().lower()
+def main():
+    uploaded_image, backend_service_url, model_service = generate_ui()
 
-    if uploaded_image is not None:
-        filename = uploaded_image.name
+    if not uploaded_image:
+        return
 
-        image = Image.open(uploaded_image)
-        placeholder.image(image, use_container_width=True)
-        preprocessed_image = preprocess_image(image)
+    placeholder = st.empty()
+    placeholder.image(uploaded_image, use_container_width=True)
 
-        if st.button("Detect objects!"):
-            api_connector = API_Client(username=username, base_url=backend_service_url)
-            token = api_connector.authenticate()
+    if not st.button("Detect objects!"):
+        return
 
-            st.session_state.token = token
-            st.success("User authenticated!")
+    encoded_image = preprocess_image(uploaded_image)
 
-            image_payload = ImagePayload(
-                filename=filename,
-                image_bytes=preprocessed_image,
-                model_service=model_service,
-            )
-            detected_image = api_connector.detect_objects(image_payload)
+    api_client = API_Client(base_url=backend_service_url)
+    api_client.authenticate()
 
-            st.header("Objects detected!")
-            placeholder.empty()
-            st.image(detected_image, use_container_width=True)
+    detected_image = get_prediction(
+        filename=uploaded_image.name,
+        encoded_image=encoded_image,
+        model_service=model_service,
+        api_client=api_client,
+    )
+
+    st.header("Objects detected!")
+    placeholder.empty()
+    st.image(detected_image, use_container_width=True)
 
 
 if __name__ == "__main__":
