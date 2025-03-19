@@ -4,9 +4,6 @@ from app.api_client.api_client import API_Client
 from app.flower_classification import IMAGE_FLOWER_MAPPING, Flower
 from app.flower_classification.service import FlowerService
 
-from .classifiers import get_classifiers
-from .versions import get_classifier_versions
-
 
 def get_features() -> tuple[float, float, float, float]:
     st.write("Enter your flower features")
@@ -30,17 +27,18 @@ def get_features() -> tuple[float, float, float, float]:
 
 def classification_tab(backend_service_url: str) -> None:
     api_client = API_Client(base_url=backend_service_url)
-    api_client.authenticate()
 
     flower_service = FlowerService(api_client=api_client)
-    classifiers = get_classifiers(flower_service=flower_service)
-    classifier = st.selectbox("Select Flower Classifier", classifiers)
+    classifiers = flower_service.get_classifiers()
+    classifier = st.selectbox("Select Flower Classifier", ["", *classifiers])
 
     if not classifier:
         return
 
-    classifier_versions = get_classifier_versions(flower_service, classifier=classifier)
-    classifier_version = st.selectbox("Select Classifier Version", classifier_versions)
+    classifier_versions = flower_service.get_classifier_versions(classifier=classifier)
+    classifier_version = st.selectbox(
+        "Select Classifier Version", ["", *classifier_versions]
+    )
 
     if not classifier or classifier_version:
         return

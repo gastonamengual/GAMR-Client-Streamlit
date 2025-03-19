@@ -41,7 +41,7 @@ class FlowerService:
             json_content=flower_payload.model_dump(), path=self.classify_path
         )
         if response.ok:
-            predicted_flower_payload = FlowerPayload(**response.json())
+            predicted_flower_payload = FlowerPayload.model_validate(**response.json())
             flower.classification = FLOWER_CLASSIFICATION_MAPPING[
                 predicted_flower_payload.data.y[0]  # type: ignore
             ]
@@ -59,12 +59,12 @@ class FlowerService:
             json_content=flower_payload.model_dump(), path=self.train_path
         )
         if response.ok:
-            return FlowerPayload(**response.json())
+            return FlowerPayload.model_validate(**response.json())
 
         msg = f"ERROR {response.status_code} - Training could not be processed: {response.json()}"  # noqa: E501
         raise FlowerPredictionNotObtained(msg)
 
-    def get_classifier(self) -> list[str]:
+    def get_classifiers(self) -> list[str]:
         response = self.api_client.perform_get_request(path=self.classifiers_path)
         if response.ok:
             return response.json()["models"]  # type: ignore

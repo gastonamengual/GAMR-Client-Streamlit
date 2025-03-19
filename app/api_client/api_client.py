@@ -15,12 +15,15 @@ class API_Client:
 
     @property
     def headers(self) -> dict[str, str]:
+        if not self.token:
+            self._authenticate()
+
         return {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
         }
 
-    def authenticate(self) -> None:
+    def _authenticate(self) -> None:
         try:
             response = requests.post(
                 f"{self.base_url}/token", json={"username": Settings.USERNAME_API}
