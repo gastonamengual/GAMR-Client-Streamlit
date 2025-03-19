@@ -1,4 +1,4 @@
-from Hello import main
+from MainPage import main
 
 if __name__ == "__main__":
     main()

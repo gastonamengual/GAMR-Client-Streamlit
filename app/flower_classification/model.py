@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pydantic import BaseModel
 
 
@@ -14,15 +16,26 @@ class Flower(BaseModel):
     classification: str | None = None
 
 
-FLOWER_CLASSIFICATION_MAPPING = {0: "Setosa", 1: "Versicolor", 2: "Virginica"}
-IMAGE_FLOWER_MAPPING = {
-    "Setosa": "./images/setosa.jpg",
-    "Versicolor": "./images/versicolor.jpg",
-    "Virginica": "./images/virginica.jpg",
-}
-
-
 class FlowerPayload(BaseModel):
     data: Dataset
     model_name: str
     model_version: str | None = ""
+
+
+class FlowerType(Enum):
+    SETOSA = "Setosa"
+    VERSICOLOR = "Versicolor"
+    VIRGINICA = "Virginica"
+
+
+FLOWER_CLASSIFICATION_MAPPING = {
+    0: FlowerType.SETOSA,
+    1: FlowerType.VERSICOLOR,
+    2: FlowerType.VIRGINICA,
+}
+
+IMAGE_FLOWER_MAPPING = {
+    FlowerType.SETOSA: "./images/setosa.jpg",
+    FlowerType.VERSICOLOR: "./images/versicolor.jpg",
+    FlowerType.VIRGINICA: "./images/virginica.jpg",
+}

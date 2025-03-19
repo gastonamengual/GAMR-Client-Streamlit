@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from app.streamlit_utils import stop_execution
 
 
@@ -6,7 +7,7 @@ from app.streamlit_utils import stop_execution
 class BaseCustomException(Exception):
     message: str = ""
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         stop_execution(self.message)
 
 

@@ -1,15 +1,11 @@
 import streamlit as st
-from streamlit_utils.flower_classification import (
-    get_classifier_versions,
-    get_classifiers,
-)
 
 from app.api_client.api_client import API_Client
 from app.flower_classification import IMAGE_FLOWER_MAPPING, Flower
 from app.flower_classification.service import FlowerService
 
 
-def get_features():
+def get_features() -> tuple[float, float, float, float]:
     st.write("Enter your flower features")
     col1, col2, col3, col4 = st.columns(4)
 
@@ -29,19 +25,20 @@ def get_features():
     return sepal_length, sepal_width, petal_length, petal_width
 
 
-def classification_tab(backend_service_url: str):
+def classification_tab(backend_service_url: str) -> None:
     api_client = API_Client(base_url=backend_service_url)
-    api_client.authenticate()
 
     flower_service = FlowerService(api_client=api_client)
-    classifiers = get_classifiers(flower_service=flower_service)
-    classifier = st.selectbox("Select Flower Classifier", classifiers)
+    classifiers = flower_service.get_classifiers()
+    classifier = st.selectbox("Select Flower Classifier", ["", *classifiers])
 
     if not classifier:
         return
 
-    classifier_versions = get_classifier_versions(flower_service, classifier=classifier)
-    classifier_version = st.selectbox("Select Classifier Version", classifier_versions)
+    classifier_versions = flower_service.get_classifier_versions(classifier=classifier)
+    classifier_version = st.selectbox(
+        "Select Classifier Version", ["", *classifier_versions]
+    )
 
     if not classifier or classifier_version:
         return

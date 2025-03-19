@@ -36,7 +36,7 @@ def generate_ui() -> tuple[UploadedFile | None, str, str]:
 
 def get_prediction(
     filename: str, encoded_image: str, model_service: str, api_client: API_Client
-):
+) -> bytes:
     image_payload = ImagePayload(
         filename=filename,
         image_bytes=encoded_image,
@@ -46,14 +46,14 @@ def get_prediction(
     return service.detect_objects(image_payload)
 
 
-def main():
+def main() -> None:
     uploaded_image, backend_service_url, model_service = generate_ui()
 
     if not uploaded_image:
         return
 
     placeholder = st.empty()
-    placeholder.image(uploaded_image, use_container_width=True)
+    placeholder.image(uploaded_image, use_container_width=True, width=400)
 
     if not st.button("Detect objects!"):
         return
@@ -61,7 +61,6 @@ def main():
     encoded_image = preprocess_image(uploaded_image)
 
     api_client = API_Client(base_url=backend_service_url)
-    api_client.authenticate()
 
     detected_image = get_prediction(
         filename=uploaded_image.name,
@@ -72,7 +71,7 @@ def main():
 
     st.header("Objects detected!")
     placeholder.empty()
-    st.image(detected_image, use_container_width=True)
+    st.image(detected_image, use_container_width=True, width=400)
 
 
 if __name__ == "__main__":

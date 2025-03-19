@@ -1,10 +1,8 @@
-from dataclasses import dataclass
 from enum import StrEnum
 
 from app.settings import Settings
 
 
-@dataclass
 class BackendService(StrEnum):
     VERCEL = "Vercel"
     RENDER_DOCKER = "Render + Docker"
