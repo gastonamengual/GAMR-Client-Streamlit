@@ -4,8 +4,7 @@ from app.streamlit_utils.object_detection import preprocess_image
 
 
 def test_preprocess_image() -> None:
-    current_dir = Path.cwd()
-    sample_img_url = f"{current_dir}/images/sample_images/desktop.jpg"
+    sample_img_url = f"{Path.cwd()}/tests/examples/sample_images/desktop.jpg"
 
     image_base64 = preprocess_image(sample_img_url)
     assert image_base64 is not None
