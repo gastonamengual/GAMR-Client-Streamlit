@@ -34,14 +34,12 @@ def read_csv_to_data(uploaded_file: UploadedFile) -> Dataset:
     X, y = [], []
 
     for row in csv_reader:
-        X.append(
-            [
-                float(row[col_idx["sepal_length"]]),
-                float(row[col_idx["sepal_width"]]),
-                float(row[col_idx["petal_length"]]),
-                float(row[col_idx["petal_width"]]),
-            ]
-        )
+        X.append([
+            float(row[col_idx["sepal_length"]]),
+            float(row[col_idx["sepal_width"]]),
+            float(row[col_idx["petal_length"]]),
+            float(row[col_idx["petal_width"]]),
+        ])
         y.append(int(row[col_idx["species"]]))  # Assuming species is already numerical
 
     return Dataset(X=X, y=y)

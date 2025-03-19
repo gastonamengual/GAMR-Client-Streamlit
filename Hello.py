@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-def main():
+def main() -> None:
     st.set_page_config(
         page_title="Hello",
         page_icon="👋",
@@ -30,5 +30,5 @@ def main():
     Streamlit UI + FastAPI backend service (hosted in Vercel) + Model Registry (hosted in HuggingFace)
 
 
-    """
+    """  # noqa: E501
     )

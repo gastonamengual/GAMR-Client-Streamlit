@@ -4,21 +4,21 @@ from app.api_client.model import BackendService, backend_service_urls
 from app.streamlit_utils.flower_classification import classification_tab, training_tab
 
 
-def main():
+def main() -> None:
     disabled = True
     st.title("Iris Classification Feature Currently Disabled")
     st.markdown("""
 
     ### Hosting Limitations
     - **Vercel** does not support deployments exceeding 250MB, and **MLflow** exceeds this limit, making it impossible to host the API there.
-    - **Render’s** free tier has a 512MB RAM limit, which is not enough for running **MLflow** reliably.
+    - **Render's** free tier has a 512MB RAM limit, which is not enough for running **MLflow** reliably.
 
     ### Alternative Solutions
     To enable **MLflow** with a functional model registry, a paid hosting option is required. Possible alternatives include:
-    - **Azure Functions** – Serverless compute service that can run ML models efficiently.
-    - **AWS Lambda** – Scalable serverless option with flexible resource allocation.
+    - **Azure Functions** - Serverless compute service that can run ML models efficiently.
+    - **AWS Lambda** - Scalable serverless option with flexible resource allocation.
 
-    """)
+    """)  # noqa: E501
 
     if disabled:
         return

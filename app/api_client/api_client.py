@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-import requests  # type: ignore
+import requests
 
 from app.settings import Settings
 
@@ -20,40 +20,42 @@ class API_Client:
             "Content-Type": "application/json",
         }
 
-    def authenticate(self):
+    def authenticate(self) -> None:
         try:
             response = requests.post(
                 f"{self.base_url}/token", json={"username": Settings.USERNAME_API}
             )
 
             if not response.ok:
-                raise TokenNotObtainedError(
-                    f"ERROR {response.status_code} - Token not obtained: {response.json()}"
-                )
+                msg = f"ERROR {response.status_code} - Token not obtained: {response.json()}"  # noqa: E501
+                raise TokenNotObtainedError(msg)
             token = response.json().get("token")
 
             self.token = token
 
-        except Exception as ex:
-            raise TokenNotObtainedError(f"Token request failed: {ex}")
+        except requests.exceptions.RequestException as ex:
+            msg = f"Token request failed: {ex}"
+            raise TokenNotObtainedError(msg) from ex
 
-    def perform_post_request(self, json_content: dict[str, Any], path: str):
+    def perform_post_request(
+        self, json_content: dict[str, Any], path: str
+    ) -> requests.Response:
         try:
-            response = requests.post(
+            return requests.post(
                 f"{self.base_url}/{path}",
                 headers=self.headers,
                 json=json_content,
             )
-            return response
-        except Exception as e:
-            raise PredictionNotObtained(f"Post request failed: {e}")
+        except requests.exceptions.RequestException as ex:
+            msg = f"Post request failed: {ex}"
+            raise PredictionNotObtained(msg) from ex
 
-    def perform_get_request(self, path: str):
+    def perform_get_request(self, path: str) -> requests.Response:
         try:
-            response = requests.get(
+            return requests.get(
                 f"{self.base_url}/{path}",
                 headers=self.headers,
             )
-            return response
-        except Exception as e:
-            raise PredictionNotObtained(f"Get request failed: {e}")
+        except Exception as ex:
+            msg = f"Get request failed: {ex}"
+            raise PredictionNotObtained(msg) from ex

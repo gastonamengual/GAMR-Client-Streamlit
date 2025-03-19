@@ -15,9 +15,6 @@ class ObjectDetectionService:
         )
 
         if not response.ok:
-            raise DetectionNotObtained(
-                f"ERROR {response.status_code} - Image could not be processed: {response.json()}"
-            )
-        detected_image = response.content
-
-        return detected_image
+            msg = f"ERROR {response.status_code} - Image could not be processed: {response.json()}"  # noqa: E501
+            raise DetectionNotObtained(msg)
+        return response.content

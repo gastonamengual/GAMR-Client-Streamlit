@@ -7,7 +7,7 @@ from .classifiers import get_classifiers
 from .read_csv_data import read_csv_to_data
 
 
-def training_tab(backend_service_url: str):
+def training_tab(backend_service_url: str) -> None:
     api_client = API_Client(base_url=backend_service_url)
     api_client.authenticate()
 
@@ -23,7 +23,7 @@ def training_tab(backend_service_url: str):
         disabled=disable_selectbox,
     )
 
-    classifier_to_train = new_classifier if new_classifier else classifier
+    classifier_to_train = new_classifier or classifier
 
     st.markdown(f"### Training: {classifier_to_train}")
 
@@ -41,5 +41,5 @@ def training_tab(backend_service_url: str):
         data=data,
     )
     st.write(
-        f"New version trained: {flower_payload.model_name} - v{flower_payload.model_version}"
+        f"New version trained: {flower_payload.model_name} - v{flower_payload.model_version}"  # noqa: E501
     )

@@ -8,7 +8,7 @@ from .classifiers import get_classifiers
 from .versions import get_classifier_versions
 
 
-def get_features():
+def get_features() -> tuple[float, float, float, float]:
     st.write("Enter your flower features")
     col1, col2, col3, col4 = st.columns(4)
 
@@ -28,7 +28,7 @@ def get_features():
     return sepal_length, sepal_width, petal_length, petal_width
 
 
-def classification_tab(backend_service_url: str):
+def classification_tab(backend_service_url: str) -> None:
     api_client = API_Client(base_url=backend_service_url)
     api_client.authenticate()
 

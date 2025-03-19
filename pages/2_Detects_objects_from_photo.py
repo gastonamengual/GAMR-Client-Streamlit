@@ -36,7 +36,7 @@ def generate_ui() -> tuple[UploadedFile | None, str, str]:
 
 def get_prediction(
     filename: str, encoded_image: str, model_service: str, api_client: API_Client
-):
+) -> bytes:
     image_payload = ImagePayload(
         filename=filename,
         image_bytes=encoded_image,
@@ -46,7 +46,7 @@ def get_prediction(
     return service.detect_objects(image_payload)
 
 
-def main():
+def main() -> None:
     uploaded_image, backend_service_url, model_service = generate_ui()
 
     if not uploaded_image:

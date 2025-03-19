@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from app.api_client.api_client import API_Client
 from app.flower_classification import (
     FLOWER_CLASSIFICATION_MAPPING,
     Dataset,
@@ -9,8 +10,6 @@ from app.flower_classification import (
     ModelsNotObtained,
     VersionsNotObtained,
 )
-
-from ..api_client.api_client import API_Client
 
 
 @dataclass
@@ -41,16 +40,15 @@ class FlowerService:
         response = self.api_client.perform_post_request(
             json_content=flower_payload.model_dump(), path=self.classify_path
         )
-        if not response.ok:
-            raise FlowerPredictionNotObtained(
-                f"ERROR {response.status_code} - Prediction could not be processed: {response.json()}"
-            )
+        if response.ok:
+            predicted_flower_payload = FlowerPayload(**response.json())
+            flower.classification = FLOWER_CLASSIFICATION_MAPPING[
+                predicted_flower_payload.data.y[0]  # type: ignore
+            ]
+            return flower
 
-        predicted_flower_payload = FlowerPayload(**response.json())
-        flower.classification = FLOWER_CLASSIFICATION_MAPPING[
-            predicted_flower_payload.data.y[0]  # type: ignore
-        ]
-        return flower
+        msg = f"ERROR {response.status_code} - Prediction could not be processed: {response.json()}"  # noqa: E501
+        raise FlowerPredictionNotObtained(msg)
 
     def train_classifier(self, classifier: str, data: Dataset) -> FlowerPayload:
         flower_payload = FlowerPayload(
@@ -60,29 +58,24 @@ class FlowerService:
         response = self.api_client.perform_post_request(
             json_content=flower_payload.model_dump(), path=self.train_path
         )
-        if not response.ok:
-            raise FlowerPredictionNotObtained(
-                f"ERROR {response.status_code} - Training could not be processed: {response.json()}"
-            )
+        if response.ok:
+            return FlowerPayload(**response.json())
 
-        return FlowerPayload(**response.json())
+        msg = f"ERROR {response.status_code} - Training could not be processed: {response.json()}"  # noqa: E501
+        raise FlowerPredictionNotObtained(msg)
 
     def get_classifier(self) -> list[str]:
         response = self.api_client.perform_get_request(path=self.classifiers_path)
-        if not response.ok:
-            raise ModelsNotObtained(
-                f"ERROR {response.status_code} - Models not obtained: {response.json()}"
-            )
-        models = response.json()["models"]
-        return models
+        if response.ok:
+            return response.json()["models"]  # type: ignore
+        msg = f"ERROR {response.status_code} - Models not obtained: {response.json()}"
+        raise ModelsNotObtained(msg)
 
     def get_classifier_versions(self, classifier: str) -> list[str]:
         response = self.api_client.perform_get_request(
             path=f"flower/specie/{classifier}/versions"
         )
-        if not response.ok:
-            raise VersionsNotObtained(
-                f"ERROR {response.status_code} - Versions not obtained: {response.json()}"
-            )
-        versions = response.json()["versions"]
-        return versions
+        if response.ok:
+            return response.json()["versions"]  # type: ignore
+        msg = f"ERROR {response.status_code} - Versions not obtained: {response.json()}"
+        raise VersionsNotObtained(msg)
