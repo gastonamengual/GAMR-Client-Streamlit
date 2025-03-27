@@ -12,20 +12,20 @@ def training_tab(backend_service_url: str) -> None:
 
     flower_service = FlowerService(api_client=api_client)
 
-    new_classifier = st.text_input("Enter a new classifier name to train:", "")
-
     classifiers = flower_service.get_classifiers()
-    disable_selectbox = bool(new_classifier)
-    classifier = st.selectbox(
-        "Or select an existing Flower Classifier",
-        classifiers,
-        disabled=disable_selectbox,
+    if not classifiers:
+        st.error("There are no trained classifiers")
+    existing_classifier = None
+    if classifiers:
+        existing_classifier = st.selectbox(
+            "Select an existing Flower Classifier",
+            ["", *classifiers],
+        )
+
+    disable_selectbox = bool(existing_classifier)
+    new_classifier = st.text_input(
+        "Or enter a new classifier name to train:", "", disabled=disable_selectbox
     )
-
-    classifier_to_train = new_classifier or classifier
-
-    st.markdown(f"### Training: {classifier_to_train}")
-
     uploaded_file = st.file_uploader("Upload your dataset (CSV)", type=["csv"])
     if not uploaded_file:
         return
@@ -35,15 +35,22 @@ def training_tab(backend_service_url: str) -> None:
         stop_execution(
             f"Invalid dataset! Ensure it contains these columns: {REQUIRED_COLUMNS}"
         )
-
+        return
     st.success("✅ Dataset loaded successfully!")
 
-    if not st.button(f"Train {classifier}!"):
+    classifier_to_train = new_classifier or existing_classifier
+
+    if not classifier_to_train:
+        return
+
+    st.markdown(f"### Training: {classifier_to_train}")
+
+    if not st.button(f"Train {classifier_to_train}!"):
         return
 
     flower_payload = flower_service.train_classifier(
         classifier=classifier_to_train,
-        data=data,  # type: ignore
+        data=data,
     )
     st.write(
         f"New version trained: {flower_payload.model_name} - v{flower_payload.model_version}"  # noqa: E501

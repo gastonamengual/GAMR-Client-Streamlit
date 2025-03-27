@@ -3,7 +3,7 @@ import io
 
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
-from app.flower_classification.model import Dataset
+from app.flower_classification.model.dataset import Dataset
 
 REQUIRED_COLUMNS = [
     "sepal_length",

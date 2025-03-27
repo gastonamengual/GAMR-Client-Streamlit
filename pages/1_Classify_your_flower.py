@@ -5,7 +5,7 @@ from app.streamlit_utils.flower_classification import classification_tab, traini
 
 
 def main() -> None:
-    disabled = True
+    disabled = False
     st.title("Iris Classification Feature Currently Disabled")
     st.markdown("""
 

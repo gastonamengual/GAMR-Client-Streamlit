@@ -15,6 +15,7 @@ pytest-cov = "==6.0.0"
 flake8 = "==7.1.2"
 black = "==25.1.0"
 pre-commit = "==4.1.0"
+ipykernel = "*"
 
 [requires]
 python_version = "3.12.9"
@@ -25,3 +26,4 @@ format = "pre-commit run --all-files"
 test = "pytest ./tests -rA --doctest-modules --junitxml=pytest-report.xml --cov=. --cov-report=html --cov-report term-missing"
 build = "bash -c 'python setup.py clean --all && python setup.py bdist_wheel'"
 publish = "twine upload dist/*"
+streamlit = "streamlit run __main__.py --server.port 80 --server.address 0.0.0.0 --server.runOnSave true"
