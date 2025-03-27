@@ -8,6 +8,6 @@ RUN pip install --upgrade pip && pip install pipenv && pipenv install --deploy
 
 COPY . /app/
 
-EXPOSE 80
+EXPOSE 8501
 
 CMD ["pipenv", "run", "streamlit"]
