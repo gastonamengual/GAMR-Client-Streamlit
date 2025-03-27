@@ -1,7 +1,7 @@
 import streamlit as st
 
 from app.api_client.api_client import API_Client
-from app.flower_classification import IMAGE_FLOWER_MAPPING, Flower
+from app.flower_classification.model import IMAGE_FLOWER_MAPPING, Flower
 from app.flower_classification.service import FlowerService
 
 
@@ -30,6 +30,10 @@ def classification_tab(backend_service_url: str) -> None:
 
     flower_service = FlowerService(api_client=api_client)
     classifiers = flower_service.get_classifiers()
+    if not classifiers:
+        st.error("There are no trained classifiers")
+        return
+
     classifier = st.selectbox("Select Flower Classifier", ["", *classifiers])
 
     if not classifier:
@@ -39,8 +43,7 @@ def classification_tab(backend_service_url: str) -> None:
     classifier_version = st.selectbox(
         "Select Classifier Version", ["", *classifier_versions]
     )
-
-    if not classifier or classifier_version:
+    if not classifier_version:
         return
 
     sepal_length, sepal_width, petal_length, petal_width = get_features()
@@ -61,5 +64,5 @@ def classification_tab(backend_service_url: str) -> None:
         classifier_version=str(classifier_version),
     )
     image_path = IMAGE_FLOWER_MAPPING[flower.classification]  # type: ignore
-    st.write(f"Your flower is an Iris {flower.classification}")
+    st.write(f"Your flower is an Iris {flower.classification.value}")  # type: ignore
     st.image(image_path, width=400)
