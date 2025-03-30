@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-ui-streamlit
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: client-ui-streamlit
+  template:
+    metadata:
+      labels:
+        app: client-ui-streamlit
+    spec:
+      containers:
+        - name: client-ui-streamlit
+          image: gastonamengual/client-ui-streamlit:latest
+          ports:
+            - containerPort: 8501
+          envFrom:
+            - secretRef:
+                name: client-ui-streamlit-secrets
+          env:
+            - name: LOCAL_BASE_URL
+              value: "http://backend-service-api:8080"
+            - name: DB_PORT
+              value: "5432"
