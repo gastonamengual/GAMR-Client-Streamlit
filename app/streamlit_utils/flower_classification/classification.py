@@ -3,6 +3,7 @@ import streamlit as st
 from app.api_client.api_client import API_Client
 from app.flower_classification.model import IMAGE_FLOWER_MAPPING, Flower
 from app.flower_classification.service import FlowerService
+from app.monitoring import PROMETHEYS_MONITOR
 
 
 def get_features() -> tuple[float, float, float, float]:
@@ -58,11 +59,17 @@ def classification_tab(backend_service_url: str) -> None:
     if not st.button("Predict Flower!"):
         return
 
+    start_time = PROMETHEYS_MONITOR.start_time()
+
     flower = flower_service.classify_flower(
         flower=flower,
         classifier=classifier,
         classifier_version=str(classifier_version),
     )
+
+    duration = PROMETHEYS_MONITOR.get_duration(start_time)
+    PROMETHEYS_MONITOR.record_request(action="prediction", duration=duration)
+
     image_path = IMAGE_FLOWER_MAPPING[flower.classification]  # type: ignore
     st.write(f"Your flower is an Iris {flower.classification.value}")  # type: ignore
     st.image(image_path, width=400)

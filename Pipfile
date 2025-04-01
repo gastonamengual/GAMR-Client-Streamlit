@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 requests = "==2.32.3"
 streamlit = "==1.42.2"
+streamlit_extras = "*"
 pydantic = "==2.10.6"
 pydantic-settings = "*"
 
@@ -15,7 +16,6 @@ pytest-cov = "==6.0.0"
 flake8 = "==7.1.2"
 black = "==25.1.0"
 pre-commit = "==4.1.0"
-ipykernel = "*"
 
 [requires]
 python_version = "3.12.9"

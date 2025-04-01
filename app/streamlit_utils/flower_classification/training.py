@@ -2,6 +2,7 @@ import streamlit as st
 
 from app.api_client.api_client import API_Client
 from app.flower_classification import FlowerService
+from app.monitoring import PROMETHEYS_MONITOR
 from app.streamlit_utils.utils import stop_execution
 
 from .read_csv_data import REQUIRED_COLUMNS, read_csv_to_data
@@ -48,10 +49,16 @@ def training_tab(backend_service_url: str) -> None:
     if not st.button(f"Train {classifier_to_train}!"):
         return
 
+    start_time = PROMETHEYS_MONITOR.start_time()
+
     flower_payload = flower_service.train_classifier(
         classifier=classifier_to_train,
         data=data,
     )
+
+    duration = PROMETHEYS_MONITOR.get_duration(start_time)
+    PROMETHEYS_MONITOR.record_request(action="training", duration=duration)
+
     st.write(
         f"New version trained: {flower_payload.model_name} - v{flower_payload.model_version}"  # noqa: E501
     )

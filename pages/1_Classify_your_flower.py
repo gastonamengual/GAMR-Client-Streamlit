@@ -33,6 +33,7 @@ def main() -> None:
     tab1, tab2 = st.tabs(["🔮 Prediction", "📚 Training"])
     with tab1:
         classification_tab(backend_service_url)
+
     with tab2:
         training_tab(backend_service_url)
 
